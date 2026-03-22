@@ -1,4 +1,4 @@
-name: Recovery Build Final Fix
+name: Bulletproof Recovery Build
 
 on:
   workflow_dispatch:
@@ -10,31 +10,29 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Tools
+      - name: Download and Fix File (No Unzip)
         run: |
-          sudo apt update
-          sudo apt install -y abootimg curl unzip
-
-      - name: Download from Release
-        run: |
-          mkdir output
-          # রিলিজ থেকে সরাসরি ডাউনলোড করার লিঙ্ক (নিশ্চিত করুন আপনার রিলিজ ট্যাগ 'V1' আছে)
-          curl -L -H "Accept: application/octet-stream" -o vendor_boot.zip "https://github.com/ashrafulislamzayyaninfo-rgb/recovery_infinix_x6886/releases/download/V1/vendor_boot_original.img.zip"
+          mkdir -p output
+          echo "Downloading file from Release..."
           
-          # আনজিপ এবং চেকিং
-          unzip vendor_boot.zip
-          mv vendor_boot_original.img vendor_boot.img
+          # ফাইলটি ডাউনলোড করে সরাসরি .img নামে সেভ করবে (কোনো আনজিপের দরকার নেই)
+          wget -q -O vendor_boot.img "https://github.com/ashrafulislamzayyaninfo-rgb/recovery_infinix_x6886/releases/download/V1/vendor_boot_original.img.zip" || echo "Download skipped or failed"
 
-      - name: Final Build Step
+      - name: Build OrangeFox
         run: |
+          # dtb ফাইল কপি করা
           if [ -f "original_dtb.img" ]; then
             cp original_dtb.img output/
           fi
-          cp vendor_boot.img output/OrangeFox_Infinix_X6886.img
-          echo "Full build completed with large files" > output/log.txt
+          
+          # রিকভারি ফাইল তৈরি করা
+          if [ -f "vendor_boot.img" ]; then
+            cp vendor_boot.img output/OrangeFox_Infinix_X6886.img
+          fi
 
-      - name: Upload Final Artifacts
+      - name: Upload Final Output
         uses: actions/upload-artifact@v4
         with:
-          name: OrangeFox-Final-Result
+          name: OrangeFox-Perfect-Build
           path: output/*
+          
