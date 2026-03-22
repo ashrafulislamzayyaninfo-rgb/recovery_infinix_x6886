@@ -1,0 +1,10 @@
+/system         erofs     system                                     display="System";logical;slotselect
+/vendor         erofs     vendor                                     display="Vendor";logical;slotselect
+/product        erofs     product                                    display="Product";logical;slotselect
+/metadata       ext4      /dev/block/by-name/metadata                display="Metadata"
+/data           f2fs      /dev/block/by-name/userdata                fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,keydirectory=/metadata/vold/metadata_encryption
+/boot           emmc      /dev/block/by-name/boot                    display="Boot";slotselect
+/vendor_boot    emmc      /dev/block/by-name/vendor_boot             display="Vendor Boot";slotselect
+/dtbo           emmc      /dev/block/by-name/dtbo                    display="DTBO";slotselect
+/external_sd    vfat      /dev/block/mmcblk0p1                       display="Micro SDcard";storage;wipeui;removable
+/usb_otg        vfat      /dev/block/sdd1                            display="USB-OTG";storage;wipeui;removable
