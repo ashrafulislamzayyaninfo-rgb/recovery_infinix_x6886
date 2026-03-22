@@ -1,0 +1,30 @@
+name: Recovery Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Initializing environment
+        run: |
+          sudo apt update
+          sudo apt install -y abootimg python3
+
+      - name: Build Start
+        run: |
+          mkdir output
+          echo "Building OrangeFox for Infinix X6886..."
+          # এখানে আমরা আপনার dtb ব্যবহার করে একটি টেস্ট ইমেজ বানাব
+          cp original_dtb.img output/recovery_test.img
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: OrangeFox-Infinix-X6886
+          path: output/*
+          
