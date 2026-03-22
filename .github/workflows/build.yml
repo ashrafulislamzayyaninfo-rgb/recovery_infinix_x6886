@@ -13,21 +13,29 @@ jobs:
       - name: Setup Build Environment
         run: |
           sudo apt update
-          sudo apt install -y abootimg python3 curl unzip
+          sudo apt install -y abootimg curl unzip
 
-      - name: Download Base Files from Release
+      - name: Download and Prepare Files
         run: |
-          # রিলিজ থেকে আপনার জিপ করা ফাইল ডাউনলোড
-          curl -L -o vendor_boot.img.zip https://github.com/ashrafulislamzayyaninfo-rgb/recovery_infinix_x6886/releases/download/v1/vendor_boot_original.img.zip
-          unzip vendor_boot.img.zip
-          mv vendor_boot_original.img vendor_boot.img
+          mkdir output
+          # রিলিজ থেকে আপনার জিপ করা ফাইল ডাউনলোড (নাম হুবহু মিল থাকতে হবে)
+          curl -L -o vendor_boot.zip "https://github.com/ashrafulislamzayyaninfo-rgb/recovery_infinix_x6886/releases/download/v1/vendor_boot_original.img.zip"
+          
+          # ফাইলটি আনজিপ করা
+          if unzip vendor_boot.zip; then
+            mv vendor_boot_original.img vendor_boot.img
+          else
+            echo "Error: Unzip failed. Please check if the file name in Release is correct."
+            exit 1
+          fi
 
       - name: Build OrangeFox Recovery
         run: |
-          mkdir output
           echo "Building OrangeFox for Infinix X6886..."
-          # আপনার ফোনের ডিটিবি ফাইলটি যুক্ত করা
-          cp original_dtb.img output/
+          # যদি ডিটিবি ফাইল থাকে তবে তা যুক্ত করা
+          if [ -f "original_dtb.img" ]; then
+            cp original_dtb.img output/
+          fi
           cp vendor_boot.img output/OrangeFox_Infinix_X6886.img
           
       - name: Upload Finished Recovery
@@ -35,4 +43,5 @@ jobs:
         with:
           name: OrangeFox-Recovery-Final
           path: output/*
+          /*
           
