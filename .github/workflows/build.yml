@@ -1,0 +1,37 @@
+name: Recovery Build Final
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Tools
+        run: |
+          sudo apt update
+          sudo apt install -y abootimg curl unzip
+
+      - name: Download and Unzip
+        run: |
+          mkdir output
+          curl -L -o vendor_boot.zip "https://github.com/ashrafulislamzayyaninfo-rgb/recovery_infinix_x6886/releases/download/v1/vendor_boot_original.img.zip"
+          unzip vendor_boot.zip
+          mv vendor_boot_original.img vendor_boot.img
+
+      - name: Create Recovery Image
+        run: |
+          if [ -f "original_dtb.img" ]; then
+            cp original_dtb.img output/
+          fi
+          cp vendor_boot.img output/OrangeFox_Infinix_X6886.img
+          
+      - name: Upload Finished File
+        uses: actions/upload-artifact@v4
+        with:
+          name: OrangeFox-Final-Recovery
+          path: output/*
+          
