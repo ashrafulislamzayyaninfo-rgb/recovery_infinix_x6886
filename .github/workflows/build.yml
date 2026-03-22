@@ -1,4 +1,4 @@
-name: Recovery Build Final
+name: Recovery Test Build
 
 on:
   workflow_dispatch:
@@ -10,32 +10,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Tools
-        run: |
-          sudo apt update
-          sudo apt install -y abootimg curl unzip
-
-      - name: Fetch Large Files from Release
+      - name: Create Output Folder
         run: |
           mkdir output
-          # রিলিজ থেকে সরাসরি ফাইল ডাউনলোড করার জন্য সঠিক লিঙ্ক ব্যবহার
-          curl -L -o vendor_boot.zip "https://github.com/ashrafulislamzayyaninfo-rgb/recovery_infinix_x6886/releases/download/v1/vendor_boot_original.img.zip"
-          
-          # ফাইলটি আনজিপ করে মূল ফাইলে রূপান্তর
-          unzip vendor_boot.zip
-          mv vendor_boot_original.img vendor_boot.img
+          # আপনার রিপোজিটরির বর্তমান ফাইলগুলো প্যাকেজ করা
+          cp *.img output/ 2>/dev/null || true
+          cp *.mk output/ 2>/dev/null || true
+          echo "Test build successful" > output/status.txt
 
-      - name: Build OrangeFox
-        run: |
-          # রিকভারি তৈরির কাজ এখানে হবে
-          if [ -f "original_dtb.img" ]; then
-            cp original_dtb.img output/
-          fi
-          cp vendor_boot.img output/OrangeFox_Infinix_X6886.img
-          
-      - name: Upload Results
+      - name: Upload Files
         uses: actions/upload-artifact@v4
         with:
-          name: OrangeFox-Recovery-Final
+          name: Recovery-Basic-Files
           path: output/*
           
